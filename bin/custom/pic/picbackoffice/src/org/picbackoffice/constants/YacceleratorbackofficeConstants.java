@@ -9,6 +9,7 @@ package org.picbackoffice.constants;
 public final class YacceleratorbackofficeConstants extends GeneratedYacceleratorbackofficeConstants
 {
 	public static final String EXTENSIONNAME = "picbackoffice";
+	public static final String FILE_UPLOAD_PROPERTY = "currentObject.productFile";
 
 	private YacceleratorbackofficeConstants()
 	{

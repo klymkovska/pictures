@@ -104,5 +104,19 @@
             </itemtype>
         </typegroup>
 
+        <typegroup name="Jobs">
+            <itemtype code="SearchPicturesCronJob" autocreate="true" generate="true" extends="CronJob"
+                      jaloclass="com.test.pic.core.jalo.SearchPicturesJob">
+                <attributes>
+                    <attribute qualifier="images" type="Media">
+                        <persistence type="property"/>
+                    </attribute>
+                    <attribute qualifier="productFile" type="Media">
+                        <persistence type="property"/>
+                    </attribute>
+                </attributes>
+            </itemtype>
+        </typegroup>
+
     </itemtypes>
 </items>

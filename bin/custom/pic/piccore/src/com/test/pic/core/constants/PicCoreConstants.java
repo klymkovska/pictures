@@ -8,9 +8,6 @@ package com.test.pic.core.constants;
  */
 public final class PicCoreConstants extends GeneratedPicCoreConstants
 {
-	public static final String EXTENSIONNAME = "piccore";
-
-
 	private PicCoreConstants()
 	{
 		//empty
@@ -24,5 +21,8 @@ public final class PicCoreConstants extends GeneratedPicCoreConstants
 	public static final String QUOTE_TO_EXPIRE_SOON_EMAIL_PROCESS = "quote-to-expire-soon-email-process";
 	public static final String QUOTE_EXPIRED_EMAIL_PROCESS = "quote-expired-email-process";
 	public static final String QUOTE_POST_CANCELLATION_PROCESS = "quote-post-cancellation-process";
+	public static final String EXTENSIONNAME = "piccore";
+	public static final String ENCODING = "UTF-8";
+	public static final String ARCHIVE_NAME = "images.zip";
 
 }
