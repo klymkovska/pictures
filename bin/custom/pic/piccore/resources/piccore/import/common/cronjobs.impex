@@ -38,3 +38,7 @@ INSERT_UPDATE Trigger;cronJob(code)[unique=true];second[default=0];minute[defaul
 ;ticketsRetentionCronJob;
 # Run the CloseStagnantServiceTicketsJob at 12:05 AM every day
 ;ticketsStagnationJob;;;12;0;;;;true;
+
+INSERT_UPDATE SearchPicturesCronJob; code[unique = true]      ; job(code)         ; singleExecutable; sessionLanguage(isocode)
+; exportPicturesJob        ; searchPicturesJob ; false           ; en
+

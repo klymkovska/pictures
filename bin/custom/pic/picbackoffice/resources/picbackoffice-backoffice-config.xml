@@ -3,7 +3,9 @@
  Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
 -->
 <config xmlns="http://www.hybris.com/cockpit/config"
-	xmlns:na="http://www.hybris.com/cockpitng/config/notifications">
+	xmlns:na="http://www.hybris.com/cockpitng/config/notifications"
+	xmlns:editorArea="http://www.hybris.com/cockpitng/component/editorArea"
+	xmlns="http://www.hybris.com/cockpit/config">
 
 	<context merge-by="module" component="editorareaactions" type="Consignment">
 		<y:actions xmlns:y="http://www.hybris.com/cockpit/config/hybris">
@@ -21,6 +23,30 @@
 	            <na:message>hmc.action.confirmpickup.success</na:message>
 	        </na:notifications>
 	   </na:notification-area>
+	</context>
+
+	<context type="SearchPicturesCronJob" component="editor-area" merge-by="type">
+		<editorArea:editorArea>
+			<editorArea:tab name="backoffice.SearchPicturesCronJob.uploadfile" position="9">
+				<editorArea:section name="backoffice.SearchPicturesCronJob.uploadfile.general">
+					<editorArea:attribute type="com.hybris.cockpitng.editor.defaultfileupload.FileUploadResult" editor="com.hybris.cockpitng.editor.dndfileupload" qualifier="productFile">
+						<editorArea:editor-parameter>
+							<editorArea:name>accept</editorArea:name>
+							<editorArea:value>text/csv</editorArea:value>
+						</editorArea:editor-parameter>
+					</editorArea:attribute>
+				</editorArea:section>
+			</editorArea:tab>
+		</editorArea:editorArea>
+	</context>
+
+	<context merge-by="module" component="editorareaactions" type="SearchPicturesCronJob">
+		<y:actions xmlns:y="http://www.hybris.com/cockpit/config/hybris">
+			<y:group qualifier="common">
+				<y:label>actiongroup.common</y:label>
+				<y:action action-id="com.test.pic.backoffice.actions.uploadfile" property="currentObject"/>
+			</y:group>
+		</y:actions>
 	</context>
 
 </config>
