@@ -538,4 +538,12 @@
 		<property name="itemCleanupHooks" ref="csTicketRetentionHooks"/>
 		<property name="ticketBusinessService" ref="ticketBusinessService"/>
 	</bean>
+
+	<alias alias="productDao" name="customProductDao"/>
+	<bean id="customProductDao" class="com.test.pic.core.daos.impl.CustomProductDao" parent="defaultProductDao"/>
+
+	<bean id="imageExportService" class="com.test.pic.core.services.impl.ImageExportService"/>
+
+	<bean id="searchPicturesJob" class="com.test.pic.core.job.SearchPicturesJob" parent="abstractJobPerformable" lazy-init="true"/>
+
 </beans>

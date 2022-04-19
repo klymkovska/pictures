@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<action-definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   id="com.test.pic.backoffice.actions.uploadfile"
+                   xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/action-definition.xsd">
+    <name>Upload file</name>
+    <description>Action uploads file with product codes</description>
+    <author>hybris</author>
+    <version>1.0</version>
+
+    <actionClassName>com.test.pic.backoffice.actions.UploadFileAction</actionClassName>
+
+    <inputType>com.test.pic.core.model.SearchPicturesCronJobModel</inputType>
+    <outputType>java.lang.Object</outputType>
+
+    <iconUri>icons/icon_config_sync.png</iconUri>
+    <iconHoverUri>icons/icon_config_sync.png</iconHoverUri>
+    <iconDisabledUri>icons/icon_config_sync.png</iconDisabledUri>
+
+</action-definition>
