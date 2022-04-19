@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<project xmlns:jacoco="antlib:org.jacoco.ant" name="config_buildcallbacks">
+
+    <macrodef name="_before_initialize">
+        <sequential>
+            <echo message="_before_initialize"/>
+            <property name="log.file" value="${HYBRIS_LOG_DIR}/initialize.log"/>
+            <property name="target.operation" value="Initialize" />
+            <record name="${log.file}" action="start" loglevel="verbose"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="_before_updatesystem">
+        <sequential>
+            <echo message="_before_updatesystem"/>
+            <property name="log.file" value="${HYBRIS_LOG_DIR}/update_system.log"/>
+            <property name="target.operation" value="update-system" />
+            <record name="${log.file}" action="start" loglevel="verbose"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="_after_initialize">
+        <sequential>
+            <echo message="_after_initialize"/>
+            <track-errors />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="_after_updatesystem">
+        <sequential>
+            <echo message="_after_updatesystem"/>
+            <track-errors />
+        </sequential>
+    </macrodef>
+
+    <!--
+  The track-errors will parse the log file created in
+  _before_initialize and _before_updatesystem to look for ERROR or WARN level messages.
+   Depending on the appender configuration, log messages can have
+   very different formats. Usually, they contain a loglevel using
+   either one of the following forms (quotes not included):
+     - ' ERROR '           (space-delimited)
+     - '[ERROR]'           (bracket-delimited)
+     - '^[[m^[[0;31mERROR' (using termcap color codes)
+   As a result, we attempt to grab most of these, but we could
+   hit false-positives as we don't parse for the specific format
+   of the current logger and only try to blanket all scenarios.
+-->
+    <macrodef name="track-errors">
+        <sequential>
+            <length file="${log.file}" property="length.bar" />
+            <echo message="Checking errors in log file - ${log.file} (file length - ${length.bar})"/>
+            <resourcecount property="log.errors">
+                <tokens>
+                    <concat>
+                        <filterchain>
+                            <linecontainsregexp>
+                                <regexp pattern="(\[ERROR\s*\])|(\s+ERROR\s+)|(((\^\[\[(\d|;)*m)+)ERROR)"/>
+                            </linecontainsregexp>
+                        </filterchain>
+                        <fileset file="${log.file}"/>
+                    </concat>
+                </tokens>
+            </resourcecount>
+            <resourcecount property="log.warnings">
+                <tokens>
+                    <concat>
+                        <filterchain>
+                            <linecontainsregexp>
+                                <regexp pattern="(\[WARN\s*\])|(\s+WARN\s+)|(((\^\[\[(\d|;)*m)+)WARN)"/>
+                            </linecontainsregexp>
+                        </filterchain>
+                        <fileset file="${log.file}"/>
+                    </concat>
+                </tokens>
+            </resourcecount>
+            <condition property="log.has.errors">
+                <not>
+                    <equals arg1="${log.errors}" arg2="0" forcestring="true"/>
+                </not>
+            </condition>
+            <condition property="log.has.warnings">
+                <not>
+                    <equals arg1="${log.warnings}" arg2="0" forcestring="true"/>
+                </not>
+            </condition>
+            <echo message="${target.operation} contains errors (ERROR = ${log.errors})."/>
+            <echo message="${target.operation} contains warnings (WARN = ${log.warnings})."/>
+            <record name="${log.file}" action="stop"/>
+<!--            <delete unless:set="keepLogFile" file="${log.file}"/>-->
+            <fail message="${target.operation} failed.">
+                <condition>
+                    <or>
+                        <and>
+                            <isset property="log.has.errors"/>
+                            <not>
+                                <isset property="skipErrorsCheck"/>
+                            </not>
+                        </and>
+                        <and>
+                            <isset property="log.has.warnings"/>
+                            <isset property="strict"/>
+                            <not>
+                                <isset property="skipWarningsCheck"/>
+                            </not>
+                        </and>
+                    </or>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${HYBRIS_CONFIG_DIR}/lib/org.jacoco.ant-0.8.4.jar"/>
+        <classpath path="${HYBRIS_CONFIG_DIR}/lib/org.jacoco.core-0.8.4.jar"/>
+        <classpath path="${HYBRIS_CONFIG_DIR}/lib/org.jacoco.agent-0.8.4.jar"/>
+        <classpath path="${HYBRIS_CONFIG_DIR}/lib/org.jacoco.report-0.8.4.jar"/>
+    </taskdef>
+
+    <target name="jacoco_unit_tests" description="runs allstests with jacoco attached">
+        <jacoco:agent property="agentvmparam"  destfile="${HYBRIS_LOG_DIR}/junit-unittests/jacoco.exec"/>
+        <ant dir="${platformhome}" target="unittests" inheritrefs="false">
+            <property name="standalone.javaoptions" value="${agentvmparam} ${standalone.javaoptions}"/>
+        </ant>
+    </target>
+
+    <macrodef name="_after_unittests">
+        <sequential>
+            <if>
+                <equals arg1="${tests.failbuildonerror}" arg2="true" />
+                <then>
+                    <if>
+                        <isset property="yuniterr${yrnd}"/>
+                        <then>
+                            <fail message="JUNITTESTS FAILED."/>
+                        </then>
+                    </if>
+                </then>
+            </if>
+        </sequential>
+    </macrodef>
+
+    <target name="jacoco_unit_web_tests" description="runs allstests with jacoco attached">
+        <jacoco:agent property="agentvmparam"  destfile="${HYBRIS_LOG_DIR}/junit-webunittests/jacoco.exec"/>
+        <ant dir="${platformhome}" target="unittests" inheritrefs="false">
+            <property name="standalone.javaoptions" value="${agentvmparam} ${standalone.javaoptions}"/>
+        </ant>
+    </target>
+
+    <target name="jacoco_integration_tests" description="runs allstests with jacoco attached">
+        <jacoco:agent property="agentvmparam" destfile="${HYBRIS_LOG_DIR}/junit-integrationtests/jacoco-it.exec"/>
+        <ant dir="${platformhome}" target="integrationtests" inheritrefs="false">
+            <property name="standalone.javaoptions" value="${agentvmparam} ${standalone.javaoptions}"/>
+        </ant>
+    </target>
+
+    <target name="prepare_tests_report_for_sonar" description="Merges unit and web unit tests coverage">
+        <delete file="${HYBRIS_LOG_DIR}/tests-report-for-sonar" />
+        <copy todir="${HYBRIS_LOG_DIR}/tests-report-for-sonar">
+            <fileset dir="${HYBRIS_LOG_DIR}/junit-unittests/" includes="*.xml"/>
+            <!--fileset dir="${HYBRIS_LOG_DIR}/junit-webunittests/" includes="*.xml"/>
+            <fileset dir="${HYBRIS_LOG_DIR}/junit-integrationtests/" includes="*.xml"/>
+            <fileset dir="${HYBRIS_LOG_DIR}/junit-integrationtests/" includes="*.exec"/-->
+        </copy>
+        <jacoco:merge destfile="${HYBRIS_LOG_DIR}/tests-report-for-sonar/unit-merged.exec">
+            <fileset dir="${HYBRIS_LOG_DIR}/junit-unittests/"    includes="*.exec"/>
+            <!--fileset dir="${HYBRIS_LOG_DIR}/junit-webunittests/" includes="*.exec"/-->
+        </jacoco:merge>
+    </target>
+
+</project>

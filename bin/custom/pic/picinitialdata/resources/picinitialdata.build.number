@@ -1,0 +1,11 @@
+#Ant properties
+#Fri Jun 05 10:41:57 CEST 2020
+version.api=1905
+vendor=hybris
+group.id=de.hybris.platform
+name=picinitialdata
+description=picinitialdata
+builddate=20200605 1036
+releasedate=20190628 1509
+version=1905.15
+module.name=platform-module
